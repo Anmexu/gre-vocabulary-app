@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRE 备考助手</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <h1>GRE 备考助手</h1>
+    <span id="saveStatus" class="save" aria-live="polite"></span>
+  </div>
+  <nav id="topNav" class="topnav" aria-label="功能">
+    <button data-area="vocab" class="on">背单词</button>
+    <button data-area="exam">刷题</button>
+  </nav>
+</header>
+
+<main>
+  <!-- 首页 -->
+  <section id="homeView">
+    <nav class="modules" id="moduleTabs" aria-label="词库"></nav>
+
+    <div class="card overview" id="overview"></div>
+
+    <div class="cta">
+      <button class="btn primary big" id="btnSmart"></button>
+      <button class="btn" id="btnDue"></button>
+      <button class="btn" id="btnWrong"></button>
+    </div>
+
+    <div class="card options-card">
+      <div class="row">
+        <span class="label">题型</span>
+        <div class="seg" id="modeSeg" role="radiogroup" aria-label="题型"></div>
+      </div>
+      <div class="row">
+        <span class="label">每轮</span>
+        <div class="seg" id="roundSeg" role="radiogroup" aria-label="每轮词数"></div>
+      </div>
+    </div>
+
+    <div class="sec-head">
+      <h2>分组</h2>
+      <button class="link" id="btnBrowseAll">浏览全部词表 →</button>
+    </div>
+    <div class="groups" id="groupList"></div>
+
+    <details class="card backup">
+      <summary>备份与恢复</summary>
+      <p class="muted">进度保存在这个浏览器里。换电脑/手机、换浏览器或清理浏览器数据之前，请先导出备份。</p>
+      <div class="row wrap">
+        <button class="btn" id="btnExport">导出备份</button>
+        <button class="btn" id="btnImport">导入备份</button>
+        <button class="btn danger" id="btnReset">清空进度</button>
+      </div>
+      <input type="file" id="fileImport" accept="application/json" hidden>
+      <p id="backupMsg" class="muted"></p>
+    </details>
+  </section>
+
+  <!-- 词表 -->
+  <section id="listView" hidden>
+    <div class="bar-top">
+      <button class="btn" id="listBack">← 返回</button>
+      <h2 id="listTitle"></h2>
+    </div>
+    <div class="card">
+      <input class="search" id="listSearch" type="search" placeholder="搜索单词或中文释义" autocomplete="off">
+      <div class="chips" id="listFilters"></div>
+    </div>
+    <div class="row wrap" id="listActions"></div>
+    <div id="listRows"></div>
+    <button class="btn more" id="listMore" hidden>显示更多</button>
+  </section>
+
+  <!-- 练习 -->
+  <section id="quizView" hidden>
+    <div class="bar-top">
+      <button class="btn" id="btnExit">← 结束</button>
+      <div class="qprog"><div class="progress"><i id="qBar"></i></div><span id="qCount"></span></div>
+    </div>
+    <div class="card question">
+      <div class="qtype" id="qType"></div>
+      <div class="prompt" id="prompt"></div>
+      <div class="sub" id="promptSub"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="detail" id="detail" hidden></div>
+      <div class="row wrap actions-row">
+        <button class="btn" id="btnPrev">← 上一题</button>
+        <button class="btn primary big grow" id="btnNext" hidden>下一题 <kbd>Enter</kbd></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 小结 -->
+  <section id="summaryView" hidden>
+    <div class="card" id="summary"></div>
+    <div class="row wrap">
+      <button class="btn primary" id="btnAgain">再来一轮</button>
+      <button class="btn" id="btnHome">返回首页</button>
+    </div>
+  </section>
+  <!-- 刷题首页 -->
+  <section id="examHome" hidden>
+    <nav class="modules" id="bankTabs" aria-label="题库"></nav>
+    <div class="card" id="examOverview"></div>
+    <div class="cta">
+      <button class="btn primary big" id="btnExamContinue"></button>
+      <button class="btn" id="btnExamWrong"></button>
+    </div>
+    <div class="sec-head"><h2>练习方式</h2></div>
+    <div class="seg" id="examModes" role="radiogroup" aria-label="练习方式"></div>
+    <div id="examBody"></div>
+  </section>
+
+  <!-- 做题 -->
+  <section id="examQuiz" hidden>
+    <div class="bar-top">
+      <button class="btn" id="exExit">← 结束</button>
+      <div class="qprog"><div class="progress"><i id="exBar"></i></div><span id="exCount"></span></div>
+    </div>
+    <div class="exhead"><b id="exTitle"></b><span id="exMeta" class="muted"></span></div>
+    <div id="exPassage" hidden></div>
+    <div class="card question">
+      <div class="qtype" id="exKind"></div>
+      <div class="stem" id="exStem"></div>
+      <img id="exImg" class="qimg" hidden alt="">
+      <div id="exOptions" class="options"></div>
+      <div class="feedback" id="exFeedback"></div>
+      <div class="note" id="exNote" hidden></div>
+      <div class="muted small" id="exHistory" hidden></div>
+      <div class="row wrap actions-row">
+        <button class="btn primary big grow" id="exSubmit">提交答案</button>
+        <button class="btn grow" id="exSkip">跳过</button>
+        <button class="btn primary big grow" id="exNext" hidden>下一题</button>
+        <button class="btn" id="exKeyEdit" hidden>设定我的答案</button>
+      </div>
+      <div class="row wrap keybar" id="exKeyBar" hidden>
+        <span class="muted">重新选择你认为正确的选项：</span>
+        <button class="btn primary" id="exKeySave">保存为我的答案</button>
+        <button class="btn" id="exKeyReset">恢复参考答案</button>
+        <button class="btn" id="exKeyCancel">取消</button>
+      </div>
+      <button hidden id="exPrev"></button>
+    </div>
+  </section>
+
+  <section id="examSummary" hidden>
+    <div class="card" id="exSummary"></div>
+    <div class="row wrap">
+      <button class="btn primary" id="exAgain">再来一轮</button>
+      <button class="btn" id="exHome">返回题库</button>
+    </div>
+  </section>
+
+  <section id="examWrongView" hidden>
+    <div class="bar-top">
+      <button class="btn" id="exWrongBack">← 返回</button>
+      <h2 id="exWrongTitle"></h2>
+    </div>
+    <div class="row wrap"><button class="btn primary" id="exWrongGo">练习这些错题</button></div>
+    <div id="exWrongList"></div>
+  </section>
+
+</main>
+
+<script src="data.js"></script>
+<script src="qdata-verbal.js"></script>
+<script src="qdata-reading.js"></script>
+<script src="qdata-math.js"></script>
+<script src="app.js"></script>
+<script src="exam.js"></script>
+</body>
+</html>
